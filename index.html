@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Presença à Distância</title>
+  <style>
+    :root{
+      --bg1:#070914; --bg2:#0e1330;
+      --card: rgba(255,255,255,.06);
+      --stroke: rgba(255,255,255,.12);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.70);
+      --glow: rgba(255,255,255,.35);
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0; min-height:100vh; color:var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background:
+        radial-gradient(900px 500px at 18% 8%, rgba(255,255,255,.08), transparent 60%),
+        radial-gradient(700px 500px at 82% 18%, rgba(255,255,255,.06), transparent 60%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      overflow-x:hidden;
+    }
+    .stars{
+      position:fixed; inset:0; pointer-events:none; opacity:.35;
+      background-image:
+        radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,.9), transparent 50%),
+        radial-gradient(1px 1px at 90px 110px, rgba(255,255,255,.7), transparent 50%),
+        radial-gradient(1.5px 1.5px at 140px 70px, rgba(255,255,255,.8), transparent 50%),
+        radial-gradient(1px 1px at 210px 160px, rgba(255,255,255,.6), transparent 50%),
+        radial-gradient(2px 2px at 260px 90px, rgba(255,255,255,.65), transparent 50%),
+        radial-gradient(1.5px 1.5px at 320px 40px, rgba(255,255,255,.7), transparent 50%);
+      background-size: 360px 200px;
+      animation: drift 16s linear infinite;
+    }
+    @keyframes drift{ from{ transform: translateY(0);} to{ transform: translateY(60px);} }
+
+    .wrap{ max-width: 980px; margin:0 auto; padding: 26px 18px 60px; }
+    header{ display:flex; align-items:flex-start; justify-content:space-between; gap:14px; flex-wrap:wrap; }
+    .badge{
+      display:inline-flex; align-items:center; gap:10px;
+      padding:10px 14px; border:1px solid var(--stroke); border-radius:999px;
+      background: rgba(255,255,255,.05); backdrop-filter: blur(10px);
+      box-shadow: 0 0 0 1px rgba(255,255,255,.02) inset;
+    }
+    .dot{ width:10px; height:10px; border-radius:50%; background: rgba(255,255,255,.7); box-shadow: 0 0 18px var(--glow); }
+
+    h1{ margin: 10px 0 6px; font-size: clamp(26px, 4vw, 44px); letter-spacing:.2px; }
+    .sub{ color:var(--muted); line-height:1.55; max-width: 70ch; }
+
+    .grid{ display:grid; grid-template-columns: 1.05fr .95fr; gap: 16px; margin-top: 16px; }
+    @media (max-width: 860px){ .grid{ grid-template-columns: 1fr; } }
+
+    .card{
+      background: var(--card); border:1px solid var(--stroke); border-radius: 18px;
+      padding: 18px; box-shadow: 0 18px 60px rgba(0,0,0,.35), 0 0 0 1px rgba(255,255,255,.02) inset;
+      backdrop-filter: blur(12px); position:relative; overflow:hidden;
+    }
+    .card:before{
+      content:""; position:absolute; inset:-2px;
+      background:
+        radial-gradient(400px 140px at 30% 0%, rgba(255,255,255,.10), transparent 60%),
+        radial-gradient(220px 160px at 90% 40%, rgba(255,255,255,.08), transparent 60%);
+      opacity:.9; pointer-events:none;
+    }
+    .card > *{ position:relative; }
+
+    .sectionTitle{ display:flex; justify-content:space-between; gap:10px; align-items:center; margin: 2px 0 10px; }
+    .sectionTitle h2{ margin:0; font-size: 16px; letter-spacing:.3px; color: rgba(255,255,255,.88); }
+    .pill{
+      font-size: 12px; color: rgba(255,255,255,.78);
+      border:1px solid var(--stroke); border-radius:999px; padding: 6px 10px; background: rgba(255,255,255,.04);
+      white-space:nowrap;
+    }
+
+    .kpis{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
+    @media (max-width: 520px){ .kpis{ grid-template-columns: 1fr; } }
+    .kpi{ border:1px solid var(--stroke); border-radius: 14px; padding: 12px; background: rgba(255,255,255,.04); }
+    .kpi .label{ color:var(--muted); font-size: 12px; }
+    .kpi .value{ font-size: 20px; margin-top: 6px; letter-spacing:.2px; }
+
+    .bigline{ margin-top: 14px; line-height: 1.65; color: rgba(255,255,255,.86); }
+    blockquote{
+      margin: 14px 0 0; padding: 12px 14px;
+      border-left: 3px solid rgba(255,255,255,.35);
+      background: rgba(255,255,255,.03); border-radius: 12px; color: rgba(255,255,255,.88);
+    }
+
+    .btnRow{ display:flex; gap:10px; flex-wrap:wrap; margin-top: 12px; }
+    button{
+      cursor:pointer; border: 1px solid var(--stroke); background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.92); padding: 10px 12px; border-radius: 12px;
+      font-weight: 700; letter-spacing:.2px; transition: transform .06s ease, background .2s ease, border-color .2s ease;
+    }
+    button:hover{ background: rgba(255,255,255,.09); border-color: rgba(255,255,255,.20); }
+    button:active{ transform: translateY(1px); }
+    .primary{ border-color: rgba(255,255,255,.28); box-shadow: 0 0 0 3px rgba(255,255,255,.05); }
+
+    .moods{ display:grid; gap:10px; }
+    .moodBtn{ width:100%; text-align:left; display:flex; justify-content:space-between; align-items:center; gap:10px; }
+    .moodBtn span{ color: var(--muted); font-weight: 600; font-size: 12px; }
+
+    .secret{
+      margin-top: 14px; padding: 14px; border-radius: 16px;
+      border: 1px dashed rgba(255,255,255,.24);
+      background: rgba(255,255,255,.03);
+    }
+    .secret small{ color: var(--muted); display:block; margin-top: 6px; line-height:1.5; }
+
+    .modal{
+      position:fixed; inset:0; display:none; align-items:center; justify-content:center;
+      background: rgba(0,0,0,.55); padding: 16px; z-index: 9999;
+    }
+    .modal.open{ display:flex; }
+    .modalCard{
+      width:min(720px, 100%); background: rgba(15,18,40,.92);
+      border:1px solid rgba(255,255,255,.14); border-radius: 18px; padding: 16px;
+      box-shadow: 0 22px 80px rgba(0,0,0,.55);
+      backdrop-filter: blur(10px);
+    }
+    .modalTop{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    .modalTop h3{ margin:0; font-size: 16px; }
+    .closeBtn{ font-weight: 800; }
+    .modalBody{ margin-top: 10px; color: rgba(255,255,255,.88); line-height: 1.65; white-space: pre-wrap; }
+    audio{ width:100%; margin-top: 12px; }
+    footer{ margin-top: 16px; color: rgba(255,255,255,.55); font-size: 12px; text-align:center; }
+  </style>
+</head>
+
+<body>
+  <div class="stars"></div>
+  <div class="wrap">
+    <header>
+      <div>
+        <div class="badge"><span class="dot"></span><span id="todayLine">Hoje é um dia nosso.</span></div>
+        <h1 id="title">Presença à distância</h1>
+        <div class="sub" id="subtitle"></div>
+      </div>
+      <div class="badge" title="Data do início">
+        <span>💍</span><span>Início: <strong id="startLabel"></strong></span>
+      </div>
+    </header>
+
+    <div class="grid">
+      <!-- Left: Relógio + símbolo -->
+      <section class="card">
+        <div class="sectionTitle">
+          <h2>O Relógio de Nós Dois</h2>
+          <span class="pill" id="pill"></span>
+        </div>
+
+        <div class="kpis">
+          <div class="kpi">
+            <div class="label">Dias desde o começo</div>
+            <div class="value" id="daysSince">—</div>
+          </div>
+          <div class="kpi">
+            <div class="label">Semanas juntos</div>
+            <div class="value" id="weeksSince">—</div>
+          </div>
+          <div class="kpi">
+            <div class="label">Próximo marco</div>
+            <div class="value" id="nextMark">—</div>
+          </div>
+        </div>
+
+        <div class="kpis" style="margin-top:10px">
+          <div class="kpi" style="grid-column: 1 / -1">
+            <div class="label">Distância</div>
+            <div class="value" id="distanceLine">—</div>
+          </div>
+        </div>
+
+        <p class="bigline" id="manifestLine"></p>
+
+        <blockquote id="closingQuote"></blockquote>
+
+        <div class="btnRow">
+          <button class="primary" id="btnCopy">Copiar mensagem</button>
+          <button id="btnStars">Soltar estrelas</button>
+        </div>
+      </section>
+
+      <!-- Right: Guia -->
+      <aside class="card">
+        <div class="sectionTitle">
+          <h2>Guia de sobrevivência</h2>
+          <span class="pill">abra conforme sentir</span>
+        </div>
+
+        <div class="moods">
+          <button class="moodBtn" data-mood="saudade">💙 Quando a saudade apertar <span>abrir</span></button>
+          <button class="moodBtn" data-mood="triste">😔 Quando o dia não estiver bom <span>abrir</span></button>
+          <button class="moodBtn" data-mood="perto">😌 Quando eu só quiser te sentir perto <span>abrir</span></button>
+          <button class="moodBtn" data-mood="rir">😄 Quando eu quiser sorrir <span>abrir</span></button>
+        </div>
+
+        <div class="secret">
+          <div class="sectionTitle" style="margin:0 0 6px">
+            <h2 style="font-size:14px; opacity:.95">Botão secreto</h2>
+            <span class="pill">silencioso</span>
+          </div>
+          <button class="primary" id="btnSecret">🔘 Aperta se a saudade for silenciosa</button>
+          <small>Isso não resolve a distância. Só lembra que você não está sozinha nela.</small>
+        </div>
+
+        <footer>
+          Se estiver pesado, abre aqui. Eu deixei um pedaço de mim pra te encontrar.
+        </footer>
+      </aside>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" id="modal">
+    <div class="modalCard">
+      <div class="modalTop">
+        <h3 id="modalTitle">—</h3>
+        <button class="closeBtn" id="btnClose">Fechar ✕</button>
+      </div>
+      <div class="modalBody" id="modalBody"></div>
+      <audio id="modalAudio" controls style="display:none"></audio>
+    </div>
+  </div>
+
+  <script>
+    // =========================
+    // CONFIG (já ajustado)
+    // =========================
+    const CONFIG = {
+      yourName: "Renan",
+      herName: "Carliane",
+      startDateISO: "2025-12-07",   // início: 07/12/2025
+      distanceKm: 200,             // distância em KM
+      toneLine: "O tempo passa. A gente fica.",
+
+      // ÁUDIO (Google Drive convertido para link direto)
+      audio: {
+        saudade: "https://drive.google.com/uc?export=download&id=1EEmpIykGsvAl60451qD8bdlQhg9umgbo",
+        triste: "",
+        perto: "",
+        rir: ""
+      },
+
+      moodMessages: {
+        saudade: [
+          "Ei… se você abriu isso, eu já imagino o tamanho da saudade.\nRespira. Eu tô aqui do meu lado do mundo, pensando em você do mesmo jeito.",
+          "Fecha os olhos por 10 segundos.\nImagina minha mão na sua.\nAgora abre.\nA gente ainda vai rir disso tudo juntos.",
+          "Saudade é amor tentando atravessar a distância.\nE o nosso atravessa."
+        ],
+        triste: [
+          "Se hoje tá difícil, não tenta ser forte o tempo todo.\nSó fica. Eu fico com você daqui.",
+          "Você não precisa resolver tudo agora.\nSó precisa passar por hoje.\nE eu te ajudo — mesmo longe.",
+          "Se eu pudesse, eu te colocava no colo e dizia: vai ficar tudo bem.\nEntão lê isso como se fosse minha voz."
+        ],
+        perto: [
+          "Encosta o celular no peito por um instante.\nImagina que é meu abraço chegando atrasado, mas chegando.",
+          "Se você só quer me sentir perto: eu te escolho de novo.\nAgora.\nHoje.\nDo jeito mais simples e verdadeiro.",
+          "Você não é ‘longe’ pra mim.\nVocê é minha."
+        ],
+        rir: [
+          "Ok, missão de hoje: achar uma coisa boba pra rir e me mandar.\nEu topo rir junto, mesmo por chamada.",
+          "Lembra: a gente é bom junto até nos dias comuns.\nPrincipalmente neles.",
+          "Se isso te fez sorrir só um pouco, já valeu.\nSorriso seu é vitória minha."
+        ]
+      },
+
+      secretLines: [
+        "Eu também tô sentindo agora.",
+        "Se você tá pensando em mim, eu prometo: eu tô pensando em você.",
+        "A distância é real. A gente também.",
+        "Isso aqui passa. A gente fica.",
+        "Respira. Eu te amo com calma e constância.",
+        "Do meu lado do mundo: eu escolho você de novo."
+      ]
+    };
+
+    // =========================
+    // Helpers
+    // =========================
+    const pad2 = (n) => String(n).padStart(2, "0");
+    const fmtDateBR = (d) => `${pad2(d.getDate())}/${pad2(d.getMonth()+1)}/${d.getFullYear()}`;
+
+    function diffDays(a, b){
+      const ms = 24*60*60*1000;
+      const da = new Date(a.getFullYear(), a.getMonth(), a.getDate());
+      const db = new Date(b.getFullYear(), b.getMonth(), b.getDate());
+      return Math.floor((db - da) / ms);
+    }
+    function addMonths(date, months){
+      const d = new Date(date);
+      const day = d.getDate();
+      d.setMonth(d.getMonth() + months);
+      if (d.getDate() !== day) d.setDate(0);
+      return d;
+    }
+    function nextMonthlyMark(start, now){
+      let m = 1;
+      while(true){
+        const mark = addMonths(start, m);
+        if (mark >= now) return {m, mark};
+        m++;
+        if (m > 240) return {m: null, mark: null};
+      }
+    }
+    function pick(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
+
+    function flash(text){
+      const b = document.createElement("div");
+      b.textContent = text;
+      b.style.position = "fixed";
+      b.style.left = "50%";
+      b.style.top = "18px";
+      b.style.transform = "translateX(-50%)";
+      b.style.padding = "10px 12px";
+      b.style.borderRadius = "12px";
+      b.style.border = "1px solid rgba(255,255,255,.22)";
+      b.style.background = "rgba(0,0,0,.35)";
+      b.style.backdropFilter = "blur(10px)";
+      b.style.color = "rgba(255,255,255,.92)";
+      b.style.zIndex = 99999;
+      document.body.appendChild(b);
+      setTimeout(()=> b.remove(), 2200);
+    }
+
+    // =========================
+    // Populate UI
+    // =========================
+    const START = new Date(CONFIG.startDateISO + "T00:00:00");
+    const now = new Date();
+
+    document.getElementById("todayLine").textContent = `Hoje, ${fmtDateBR(now)}, é um dia nosso.`;
+    document.getElementById("title").textContent = `Presença à distância — ${CONFIG.herName}`;
+    document.getElementById("subtitle").innerHTML =
+      `Um lugar pra te encontrar quando a saudade bater. <strong>${CONFIG.yourName}</strong> deixou isso aqui pra você.`;
+    document.getElementById("startLabel").textContent = fmtDateBR(START);
+    document.getElementById("pill").textContent = CONFIG.toneLine;
+
+    const days = Math.max(0, diffDays(START, now));
+    const weeks = (days / 7);
+    document.getElementById("daysSince").textContent = days;
+    document.getElementById("weeksSince").textContent = weeks.toFixed(1);
+
+    const {m, mark} = nextMonthlyMark(START, now);
+    document.getElementById("nextMark").textContent = mark ? `${m} ${m===1?"mês":"meses"} — ${fmtDateBR(mark)}` : "—";
+
+    const dkm = Number(CONFIG.distanceKm || 0);
+    document.getElementById("distanceLine").textContent =
+      dkm > 0
+        ? `${dkm.toLocaleString("pt-BR")} km — e ainda assim eu chego em você por aqui.`
+        : `A distância não foi configurada ainda — mas meu cuidado já tá aqui.`;
+
+    document.getElementById("manifestLine").textContent =
+      `Se você abriu isso agora, é porque o coração chamou. E eu quero que você lembre: você não atravessa a distância sozinha.`;
+
+    document.getElementById("closingQuote").textContent =
+      `“${CONFIG.herName}, eu não posso estar aí o tempo todo. Mas eu posso te deixar presença. Então aqui está: um pedaço de mim, sempre que você precisar.”`;
+
+    // =========================
+    // Copy message (inclui o link atual)
+    // =========================
+    function shareMessage(){
+      return [
+        `${CONFIG.herName},`,
+        ``,
+        `Eu fiz um lugar pra te encontrar quando a saudade bater.`,
+        `Desde ${fmtDateBR(START)} eu te escolho — e continuo escolhendo.`,
+        ``,
+        `Abre com calma:`,
+        `${location.href}`,
+        ``,
+        `— ${CONFIG.yourName}`
+      ].join("\n");
+    }
+
+    document.getElementById("btnCopy").addEventListener("click", async () => {
+      try{
+        await navigator.clipboard.writeText(shareMessage());
+        flash("Copiado! Agora é só mandar pra ela 💙");
+      }catch{
+        flash("Se não copiar, selecione e copie manualmente 🙂");
+        alert(shareMessage());
+      }
+    });
+
+    // Stars
+    document.getElementById("btnStars").addEventListener("click", () => {
+      const count = 70;
+      for(let i=0;i<count;i++){
+        const s = document.createElement("div");
+        s.textContent = Math.random() > 0.5 ? "✦" : "✧";
+        s.style.position = "fixed";
+        s.style.left = Math.random()*100 + "vw";
+        s.style.top = "-12px";
+        s.style.fontSize = (10 + Math.random()*16) + "px";
+        s.style.opacity = (0.5 + Math.random()*0.5);
+        s.style.filter = "drop-shadow(0 0 10px rgba(255,255,255,.35))";
+        s.style.transition = "transform 1.8s linear, opacity 1.8s linear";
+        s.style.pointerEvents = "none";
+        document.body.appendChild(s);
+        requestAnimationFrame(() => {
+          s.style.transform = `translateY(${110 + Math.random()*40}vh) rotate(${Math.random()*360}deg)`;
+          s.style.opacity = "0";
+        });
+        setTimeout(()=> s.remove(), 2000);
+      }
+    });
+
+    // =========================
+    // Modal (moods)
+    // =========================
+    const modal = document.getElementById("modal");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalBody = document.getElementById("modalBody");
+    const modalAudio = document.getElementById("modalAudio");
+
+    function openModal(title, text, audioUrl=""){
+      modalTitle.textContent = title;
+      modalBody.textContent = text;
+
+      if(audioUrl && String(audioUrl).trim().length > 5){
+        modalAudio.src = audioUrl;
+        modalAudio.style.display = "block";
+      }else{
+        modalAudio.pause();
+        modalAudio.removeAttribute("src");
+        modalAudio.style.display = "none";
+      }
+      modal.classList.add("open");
+    }
+
+    function closeModal(){
+      modal.classList.remove("open");
+      modalAudio.pause();
+    }
+    document.getElementById("btnClose").addEventListener("click", closeModal);
+    modal.addEventListener("click", (e) => { if(e.target === modal) closeModal(); });
+
+    const moodTitleMap = {
+      saudade: "💙 Quando a saudade apertar",
+      triste: "😔 Quando o dia não estiver bom",
+      perto: "😌 Quando eu só quiser te sentir perto",
+      rir: "😄 Quando eu quiser sorrir"
+    };
+
+    document.querySelectorAll(".moodBtn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const mood = btn.getAttribute("data-mood");
+        const text = pick(CONFIG.moodMessages[mood] || ["Eu tô aqui."]);
+        const audioUrl = (CONFIG.audio && CONFIG.audio[mood]) ? CONFIG.audio[mood] : "";
+        openModal(moodTitleMap[mood] || "—", text, audioUrl);
+      });
+    });
+
+    // Secret button
+    document.getElementById("btnSecret").addEventListener("click", () => {
+      const line = pick(CONFIG.secretLines);
+      openModal("🔘 Saudade silenciosa", line, "");
+    });
+  </script>
+</body>
+</html>
